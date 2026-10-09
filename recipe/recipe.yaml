@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: anneal
-  version: "0.9.0"
+  version: "0.10.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/a/anneal/anneal-${{ version }}.tar.gz
-  sha256: a7f550a57883aea603e14b464d457ace069e5cabd5e9daaf48a37f61d8bc5487
+  sha256: fba123692853ee71b5d463bee41a9a6dbacb0e77f6b0479c1cad85f4ee0f1d2b
 
 build:
   number: 0
