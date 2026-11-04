@@ -2,19 +2,29 @@ schema_version: 1
 
 context:
   name: anneal
-  version: "0.9.0"
+  version: "0.11.1"
 
 package:
   name: ${{ name|lower }}
   version: ${{ version }}
 
 source:
-  url: https://pypi.org/packages/source/a/anneal/anneal-${{ version }}.tar.gz
-  sha256: a7f550a57883aea603e14b464d457ace069e5cabd5e9daaf48a37f61d8bc5487
+  - url: https://pypi.org/packages/source/a/anneal/anneal-${{ version }}.tar.gz
+    sha256: d3b34913c23cb6c68e1376096063fc705328360ba5ebaef698e0d6919e671bab
+  # 0.11.1's sdist declares path deps on the patched nng crates but does not
+  # ship them. Take those trees from the matching tag. nng path-depends on
+  # ../nng-sys, so both directories are required before cargo metadata runs.
+  - url: https://github.com/HaoZeke/anneal/archive/refs/tags/v${{ version }}.tar.gz
+    sha256: 9fbd4440d1eecdb8c225aa0e97e93d72d172d6f79a49735eaf243059157b5ebd
+    target_directory: _upstream
+    filter:
+      - vendor/nng/**
+      - vendor/nng-sys/**
 
 build:
-  number: 1
+  number: 0
   script:
+    - ${{ PYTHON }} -c "import shutil; from pathlib import Path; src=Path('_upstream/vendor'); dst=Path('vendor'); dst.mkdir(exist_ok=True); shutil.copytree(src/'nng', dst/'nng', dirs_exist_ok=True); shutil.copytree(src/'nng-sys', dst/'nng-sys', dirs_exist_ok=True)"
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
